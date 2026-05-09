@@ -1,0 +1,22 @@
+# Claude Code local session data
+.claude/
+
+# Client briefing — confidential, kept locally only
+reference/
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node tooling artifacts (in case we add scripts later)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
