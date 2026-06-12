@@ -1,3 +1,21 @@
+// ---- Mobile nav drawer toggle -----------------------------------------------
+const navToggle = document.querySelector('.nav__toggle');
+const navDrawer = document.querySelector('.nav__drawer');
+if (navToggle && navDrawer) {
+  function closeDrawer() {
+    document.body.classList.remove('nav__menu-open');
+    navToggle.setAttribute('aria-expanded', 'false');
+  }
+  navToggle.addEventListener('click', () => {
+    const open = document.body.classList.toggle('nav__menu-open');
+    navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  navDrawer.querySelectorAll('a').forEach(a => a.addEventListener('click', closeDrawer));
+  // Close on Escape and on viewport widening past the breakpoint.
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
+  window.addEventListener('resize', () => { if (window.innerWidth > 1024) closeDrawer(); });
+}
+
 // ---- Live clock (Eastern Time, since the company is in DC/MD) ----
 function updateClock() {
   const now = new Date();

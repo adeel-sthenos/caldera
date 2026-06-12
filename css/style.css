@@ -1279,12 +1279,60 @@ footer {
   text-transform: uppercase;
 }
 
+/* ---------- MOBILE MENU TOGGLE ---------- */
+.nav__toggle {
+  display: none;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: 100px;
+  width: 44px; height: 36px;
+  padding: 0;
+  cursor: pointer;
+  position: relative;
+}
+.nav__toggle span {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 16px; height: 1.5px;
+  background: #fff;
+  transform: translate(-50%, -50%);
+  transition: transform 0.25s var(--ease), opacity 0.25s var(--ease);
+}
+.nav__toggle span:nth-child(1) { transform: translate(-50%, calc(-50% - 5px)); }
+.nav__toggle span:nth-child(3) { transform: translate(-50%, calc(-50% + 5px)); }
+.nav__menu-open .nav__toggle span:nth-child(1) { transform: translate(-50%, -50%) rotate(45deg); }
+.nav__menu-open .nav__toggle span:nth-child(2) { opacity: 0; }
+.nav__menu-open .nav__toggle span:nth-child(3) { transform: translate(-50%, -50%) rotate(-45deg); }
+
+.nav__drawer {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 8, 8, 0.96);
+  z-index: 99;
+  flex-direction: column;
+  padding: 100px 28px 40px;
+  gap: 14px;
+}
+.nav__drawer a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 24px;
+  letter-spacing: 0.04em;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.nav__drawer a:last-of-type { border-bottom: 0; }
+.nav__menu-open .nav__drawer { display: flex; }
+.nav__menu-open { overflow: hidden; }
+
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 1024px) {
   .nav { padding: 18px 24px; }
   .nav__links { display: none; }
-  .nav__right { gap: 12px; font-size: 10px; }
+  .nav__right { gap: 10px; font-size: 10px; }
   .nav__clock { display: none; }
+  .nav__toggle { display: inline-flex; align-items: center; justify-content: center; }
   .section, .stats, .tech, .apps, .about, .cta-strip, footer { padding-left: 24px; padding-right: 24px; }
   .hero__content { padding: 80px 24px 48px; }
   .subhero__inner { padding: 100px 24px 48px; }
@@ -1308,12 +1356,46 @@ footer {
 }
 
 @media (max-width: 600px) {
+  .nav__brand { font-size: 14px; letter-spacing: 0.12em; }
+  .nav__brand span { display: none; }
+  .nav__cta { padding: 7px 12px; font-size: 10px; letter-spacing: 0.1em; }
   .stats__inner { grid-template-columns: 1fr; }
   .footer__inner { grid-template-columns: 1fr; }
   .footer__bottom { flex-direction: column; gap: 12px; }
-  .matrix__row { font-size: 12px; }
   .meta-band { grid-template-columns: 1fr; }
   .job { grid-template-columns: 1fr auto; }
   .job__dept { display: none; }
   .section { padding: 90px 24px; }
+
+  /* Matrix: stack each row as its own block on mobile. First cell becomes
+     the row label, remaining cells stack below. Head row hides because the
+     column labels lose meaning once cells are stacked. */
+  .matrix__row,
+  .matrix--4 .matrix__row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    padding: 18px 0;
+    font-size: 14px;
+  }
+  .matrix__row--head { display: none; }
+  .matrix__row > div:first-child {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0.55;
+    font-weight: 500;
+  }
+  .matrix__row > div.tl { font-size: 16px; }
+
+  /* Stronger overlay over subhero hero images so white text stays legible
+     on mobile, where image detail competes with copy more aggressively. */
+  .subhero__shade,
+  .hero__shade {
+    background: linear-gradient(180deg,
+      rgba(0,0,0,0.55) 0%,
+      rgba(0,0,0,0.2) 30%,
+      rgba(0,0,0,0.2) 50%,
+      rgba(0,0,0,0.85) 85%,
+      rgba(0,0,0,0.95) 100%);
+  }
 }
