@@ -16,31 +16,35 @@ const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
 const clamp01 = (n) => Math.max(0, Math.min(1, n));
 
 const heroImg     = document.querySelector('.hero-img');
+const heroVideo   = document.querySelector('.hero-video');
 const heroSticky  = document.querySelector('.hero__sticky, .subhero__sticky');
 const heroSection = heroSticky ? heroSticky.parentElement : null;
 const heroOverlay = document.querySelector('.hero__overlay, .subhero__overlay');
 
-// Extend the hero section so it pins for ~5% of the rest of the page's scroll.
+// Extend the hero section so the user has scroll real-estate to either:
+//   • scrub the hero video (when present) — give a full viewport of runway
+//   • get the sticky-image runway effect on static hero pages — ~5% of page
 function setHeroRunway() {
   if (!heroSection || !heroSticky) return;
-  // Reset to CSS default before measuring, otherwise our previous extension
-  // would inflate the next reading.
   heroSection.style.height = '';
-  // Force a layout read after the reset.
   const stickyHeight = heroSticky.offsetHeight;
-  const pageHeight = document.documentElement.scrollHeight;
-  const runway = Math.max(0, (pageHeight - stickyHeight) * 0.05);
+  let runway;
+  if (heroVideo) {
+    runway = stickyHeight; // ~1 viewport extra = ~2 viewport heights total
+  } else {
+    const pageHeight = document.documentElement.scrollHeight;
+    runway = Math.max(0, (pageHeight - stickyHeight) * 0.05);
+  }
   heroSection.style.height = `${stickyHeight + runway}px`;
 }
 
 if (heroSection) {
-  // Measure once initial layout has settled.
   requestAnimationFrame(setHeroRunway);
   window.addEventListener('load', setHeroRunway);
   window.addEventListener('resize', setHeroRunway);
 }
 
-if (heroImg) {
+if (heroImg && !heroVideo) {
   let ticking = false;
   function onHeroScroll() {
     if (ticking) return;
@@ -48,14 +52,11 @@ if (heroImg) {
     requestAnimationFrame(() => {
       const vh = window.innerHeight;
       const y = window.scrollY;
-      // Only do work while the hero is in or near the viewport.
       if (y < vh * 1.5) {
         const p = clamp01(y / vh);
         const eased = easeOutCubic(p);
-        // Gentler zoom: 1.04 → 1.18 (was 1.08 → 1.50).
         const scale = 1.04 + eased * 0.14;
         heroImg.style.transform = `scale(${scale})`;
-        // Dark overlay: 0 → 0.3.
         if (heroOverlay) heroOverlay.style.opacity = String(eased * 0.3);
       }
       ticking = false;
@@ -64,6 +65,52 @@ if (heroImg) {
   window.addEventListener('scroll', onHeroScroll, { passive: true });
   window.addEventListener('resize', onHeroScroll, { passive: true });
   onHeroScroll();
+}
+
+// ---- Scroll-scrubbed hero video --------------------------------------------
+// Tie video.currentTime to scroll progress within the hero section.
+// User scrolls → video plays. Video ends exactly when the user has scrolled
+// past the hero runway, at which point the next section is right below.
+if (heroVideo && heroSection) {
+  heroVideo.pause();
+  // Some browsers (notably iOS Safari) won't expose video.duration until the
+  // metadata has actually loaded. Track readiness and gate the scrubber on it.
+  let duration = 0;
+  let ticking = false;
+
+  function onVideoMeta() {
+    duration = heroVideo.duration || 0;
+    // Park the video at frame 0 so first paint isn't a black frame.
+    try { heroVideo.currentTime = 0; } catch (e) { /* not yet seekable */ }
+    onVideoScroll();
+  }
+  if (heroVideo.readyState >= 1) {
+    onVideoMeta();
+  } else {
+    heroVideo.addEventListener('loadedmetadata', onVideoMeta, { once: true });
+  }
+
+  function onVideoScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      ticking = false;
+      if (!duration) return;
+      const rect = heroSection.getBoundingClientRect();
+      // Total scrollable distance inside the hero (section height - viewport).
+      const scrollable = Math.max(1, heroSection.offsetHeight - window.innerHeight);
+      // How far we've scrolled into the section, clamped 0..1.
+      const progress = clamp01(-rect.top / scrollable);
+      // Map progress to video timeline. Subtract a tiny epsilon at the end so
+      // the video sits on its final frame rather than firing `ended` repeatedly.
+      const t = Math.min(duration - 0.001, progress * duration);
+      try { heroVideo.currentTime = t; } catch (e) { /* ignore seek-not-ready */ }
+      // Reuse the dark-overlay fade for narrative weight as we scrub.
+      if (heroOverlay) heroOverlay.style.opacity = String(progress * 0.25);
+    });
+  }
+  window.addEventListener('scroll', onVideoScroll, { passive: true });
+  window.addEventListener('resize', () => { setHeroRunway(); onVideoScroll(); }, { passive: true });
 }
 
 // ---- Reveal on scroll for headings ----
