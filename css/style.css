@@ -37,14 +37,19 @@ img { display: block; max-width: 100%; }
 
 /* ---------- NAV ---------- */
 .nav {
-  position: fixed; top: 0; left: 0; right: 0;
+  position: sticky; top: 0; left: 0; right: 0;
   z-index: 100;
   padding: 22px 40px;
   display: flex; align-items: center; justify-content: space-between;
   font-size: 13px;
   letter-spacing: 0.04em;
-  mix-blend-mode: difference;
-  color: white;
+  color: #111;
+  background: linear-gradient(to bottom,
+    rgba(255,255,255,0.96) 0%,
+    rgba(255,255,255,0.86) 55%,
+    rgba(255,255,255,0) 100%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 .nav__brand {
   font-weight: 700;
@@ -55,7 +60,7 @@ img { display: block; max-width: 100%; }
 .nav__brand span { font-weight: 400; opacity: 0.6; margin-left: 8px; }
 .nav__links { display: flex; gap: 36px; list-style: none; }
 .nav__links a {
-  color: white;
+  color: #111;
   text-decoration: none;
   font-size: 13px;
   letter-spacing: 0.06em;
@@ -849,27 +854,27 @@ footer {
 .nav__cta {
   display: inline-flex; align-items: center;
   padding: 9px 16px;
-  border: 1px solid rgba(255,255,255,0.35);
+  border: 1px solid rgba(17,17,17,0.35);
   border-radius: 100px;
-  color: white;
+  color: #111;
   text-decoration: none;
   font-size: 11px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   transition: all 0.3s var(--ease);
 }
-.nav__cta:hover { border-color: white; background: rgba(255,255,255,0.08); }
+.nav__cta:hover { border-color: #111; background: rgba(17,17,17,0.06); }
 .nav__cta--solid {
-  background: white;
-  color: var(--ink);
-  border-color: white;
+  background: #111;
+  color: #fff;
+  border-color: #111;
 }
-.nav__cta--solid:hover { background: rgba(255,255,255,0.85); color: var(--ink); }
+.nav__cta--solid:hover { background: rgba(17,17,17,0.85); color: #fff; }
 .nav__cta.active {
-  background: rgba(255,255,255,0.14);
-  border-color: rgba(255,255,255,0.7);
+  background: rgba(17,17,17,0.08);
+  border-color: rgba(17,17,17,0.7);
 }
-.nav__cta--solid.active { background: white; }
+.nav__cta--solid.active { background: #111; color: #fff; }
 
 /* ---------- SUBPAGE HERO (shorter than home hero, same vocabulary) ---------- */
 .subhero {
