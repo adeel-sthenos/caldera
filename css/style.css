@@ -1206,6 +1206,18 @@ footer {
   margin-top: 4px;
 }
 
+.section--paper .form__label { opacity: 0.7; color: var(--ink); }
+.section--paper .form__input,
+.section--paper .form__select,
+.section--paper .form__textarea {
+  color: var(--ink);
+  border-bottom-color: rgba(10,10,10,0.22);
+}
+.section--paper .form__input:focus,
+.section--paper .form__select:focus,
+.section--paper .form__textarea:focus { border-bottom-color: var(--ink); }
+.section--paper .form__select option { background: var(--paper); color: var(--ink); }
+
 /* ---------- LEAD / FOUNDER ---------- */
 .leads { display: flex; flex-direction: column; }
 .lead {
